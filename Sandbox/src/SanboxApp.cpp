@@ -24,6 +24,7 @@ public:
 	Sanbox()
 	{
 		PushLayer(new ExampleLayer());
+		PushOverlay(new Hazel::ImGuiLayer());
 	}
 
 	~Sanbox()
