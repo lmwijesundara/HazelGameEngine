@@ -20,6 +20,7 @@ namespace Hazel
 		}
 	};
 
+	// Interface represnting a desktop system based window
 	class HAZEL_API Window
 	{
 	public:
