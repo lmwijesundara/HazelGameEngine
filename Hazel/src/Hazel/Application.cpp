@@ -4,6 +4,7 @@
 #include "Hazel\Events\ApplicationEvent.h"
 #include "Events\Event.h"
 #include "Hazel\Log.h"
+#include "Hazel\Input.h"
 
 #include <glad/glad.h>
 
@@ -62,6 +63,8 @@ namespace Hazel
 
 			for (Layer* layer : m_LayerStack)
 				layer->OnUpdate();
+
+			HZ_CORE_TRACE("{0}", Hazel::Input::GetMouseX());
 			m_Window->OnUpdate();
 		}
 	}
