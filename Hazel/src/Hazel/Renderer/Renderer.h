@@ -2,7 +2,7 @@
 
 namespace Hazel
 {
-	enum class RenderAPI
+	enum class RendererAPI
 	{
 		None = 0, OpenGL = 1
 	};
@@ -10,10 +10,10 @@ namespace Hazel
 	class Renderer
 	{
 	public:
-		inline static RenderAPI getAPI() { return s_RenderAPI; };
+		inline static RendererAPI GetAPI() { return s_RenderAPI; };
 
 	private:
-		static RenderAPI s_RenderAPI;
+		static RendererAPI s_RenderAPI;
 		int a;
 
 	};

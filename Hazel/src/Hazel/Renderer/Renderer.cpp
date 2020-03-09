@@ -3,6 +3,6 @@
 
 namespace Hazel
 {
-	RenderAPI Renderer::s_RenderAPI = RenderAPI::OpenGL;
+	RendererAPI Renderer::s_RenderAPI = RendererAPI::OpenGL;
 }
 
