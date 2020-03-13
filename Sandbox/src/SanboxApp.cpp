@@ -5,7 +5,7 @@ class ExampleLayer : public Hazel::Layer
 {
 public:
 	ExampleLayer()
-		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f)
+		: Layer("Example"), m_Camera(-1.6f, 1.6f, -0.9f, 0.9f), m_CameraPosition(0.0f)
 	{
 		m_VertexArray.reset(Hazel::VertexArray::Create());
 
@@ -121,11 +121,27 @@ public:
 
 	void OnUpdate() override
 	{
+		if (Hazel::Input::IsKeyPressed(HZ_KEY_LEFT))
+			m_CameraPosition.x -= m_CameraMoveSpeed;
+		else if (Hazel::Input::IsKeyPressed(HZ_KEY_RIGHT))
+			m_CameraPosition.x += m_CameraMoveSpeed;
+
+		if (Hazel::Input::IsKeyPressed(HZ_KEY_UP))
+			m_CameraPosition.y += m_CameraMoveSpeed;
+		else if (Hazel::Input::IsKeyPressed(HZ_KEY_DOWN))
+			m_CameraPosition.y -= m_CameraMoveSpeed;
+
+		if (Hazel::Input::IsKeyPressed(HZ_KEY_A))
+			m_CameraRotation += m_CameraRotationSpeed;
+		if (Hazel::Input::IsKeyPressed(HZ_KEY_D))
+			m_CameraRotation -= m_CameraRotationSpeed;
+	
 		Hazel::RenderCommand::SetClearColor({ 0.1f, 0.1f, 0.1f, 1 });
 		Hazel::RenderCommand::Clear();
 
-		m_Camera.SetPosition({ 0.5f, 0.5f, 0.0f });
-		m_Camera.SetRotation(45.0f);
+		m_Camera.SetPosition(m_CameraPosition);
+		m_Camera.SetRotation(m_CameraRotation);
+
 		Hazel::Renderer::BeginScene(m_Camera);
 		{
 			Hazel::Renderer::Submit(m_BlueShader, m_SquareVA);
@@ -136,7 +152,13 @@ public:
 	}
 
 	void OnEvent(Hazel::Event& event) override
-	{
+	{	
+		if (event.GetEventType() == Hazel::EventType::KeyPressed)
+		{
+			Hazel::KeyPressedEvent& e = (Hazel::KeyPressedEvent&)event;
+		
+			HZ_TRACE("{0}", (char)e.GetKeyCode());
+		}
 	}
 
 	virtual void OnImGuiRender() override
@@ -148,10 +170,14 @@ public:
 		std::shared_ptr<Hazel::IndexBuffer> m_IndexBuffer;
 		std::shared_ptr<Hazel::VertexArray> m_VertexArray;
 
-		Hazel::OrthographicCamera m_Camera;
-
 		std::shared_ptr<Hazel::Shader> m_BlueShader;
 		std::shared_ptr<Hazel::VertexArray> m_SquareVA;
+
+		Hazel::OrthographicCamera m_Camera;
+		glm::vec3 m_CameraPosition;
+		float m_CameraMoveSpeed = 0.01;
+		float m_CameraRotation = 0.0f;
+		float m_CameraRotationSpeed = 2.0f;
 };
 class Sanbox : public Hazel::Application
 {
