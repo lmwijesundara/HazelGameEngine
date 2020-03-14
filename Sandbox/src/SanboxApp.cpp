@@ -111,10 +111,11 @@ public:
             layout(location = 0) out vec4 color;
 
             in vec3 v_Position;
+			uniform vec4 u_Color;
 
             void main()
             {
-                color = vec4(0.2, 0.3, 0.8, 1.0);
+                color = u_Color;
             }
         )";
 
@@ -145,6 +146,9 @@ public:
 		m_Camera.SetPosition(m_CameraPosition);
 		m_Camera.SetRotation(m_CameraRotation);
 
+		glm::vec4 redColor(0.8f, 0.2f, 3.0f, 1.f);
+		glm::vec4 blueColor(0.2f, 0.3f, 0.8f, 1.f);
+
 		Hazel::Renderer::BeginScene(m_Camera);
 		{
 			//Hazel::Renderer::Submit(m_BlueShader, m_SquareVA);
@@ -156,7 +160,17 @@ public:
 				{
 					glm::vec3 pos(x * 0.11f, y * 0.11f, 0.0f);
 					glm::mat4 transform = glm::translate(glm::mat4(1.0f), pos) * scale;
+
+					if (x % 2 == 0)
+					{
+						m_BlueShader->UploadUniformFloat4("u_Color", redColor);
+					}
+					else
+					{
+						m_BlueShader->UploadUniformFloat4("u_Color", blueColor);
+					}
 					Hazel::Renderer::Submit(m_BlueShader, m_SquareVA, transform);
+					
 				}
 			}
 			Hazel::Renderer::Submit(m_Shader, m_VertexArray);
@@ -167,12 +181,12 @@ public:
 
 	void OnEvent(Hazel::Event& event) override
 	{	
-		if (event.GetEventType() == Hazel::EventType::KeyPressed)
+		/*if (event.GetEventType() == Hazel::EventType::KeyPressed)
 		{
 			Hazel::KeyPressedEvent& e = (Hazel::KeyPressedEvent&)event;
 		
 			HZ_TRACE("{0}", (char)e.GetKeyCode());
-		}
+		}*/
 	}
 
 	virtual void OnImGuiRender() override
