@@ -127,42 +127,7 @@ public:
 		m_FlatColorShader.reset(Hazel::Shader::Create(blueShaderVertexSrc, blueShaderFragmentSrc));
 
 		// Texture
-		std::string textureShaderVertexSrc = R"(
-            #version 330 core
-            
-            layout(location = 0) in vec3 a_Position;
-			layout(location = 1) in vec2 a_TexCoord;
-            
-			uniform mat4 u_ViewProjection;
-            uniform mat4 u_Transform;
-
-            out vec3 v_Position;
-			out vec2 v_TexCoord;
-
-            void main()
-            {
-                v_Position = a_Position;
-				v_TexCoord = a_TexCoord;
-				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);      
-            }
-        )";
-
-		std::string textureShaderFragmentSrc = R"(
-            #version 330 core
-            
-            layout(location = 0) out vec4 color;
-
-			in vec2 v_TexCoord;
-
-            uniform sampler2D u_Texture;
-		
-            void main()
-            {
-                color = texture(u_Texture, v_TexCoord);
-            }
-        )";
-
-		m_TextureShader.reset(Hazel::Shader::Create(textureShaderVertexSrc, textureShaderFragmentSrc));
+		m_TextureShader.reset(Hazel::Shader::Create("assets/shaders/Texture.glsl"));
 
 		m_Texture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
 
@@ -174,8 +139,12 @@ public:
 		std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_TextureShader)->Bind();
 		std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_TextureShader)->UploadUniformInt("u_Texture", 0);
 	
-	}	void OnUpdate(Hazel::Timestep ts) override
+	}	
+	
+	void OnUpdate(Hazel::Timestep ts) override
 	{
+		//HZ_TRACE("{0}", ts);
+
 		if (Hazel::Input::IsKeyPressed(HZ_KEY_LEFT))
 			m_CameraPosition.x -= m_CameraMoveSpeed * ts;
 		else if (Hazel::Input::IsKeyPressed(HZ_KEY_RIGHT))
@@ -214,8 +183,7 @@ public:
 					Hazel::Renderer::Submit(m_FlatColorShader, m_SquareVA, transform);
 				}
 			}
-			// Triangle
-			//Hazel::Renderer::Submit(m_Shader, m_VertexArray);
+		
 
 			// Texture
 			m_Texture->Bind();
@@ -223,6 +191,10 @@ public:
 
 			m_ChernoLogoTex->Bind();
 			Hazel::Renderer::Submit(m_TextureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+
+			// Triangle
+			//m_Shader->Bind();
+			Hazel::Renderer::Submit(m_Shader, m_VertexArray);
 		}
 		Hazel::Renderer::EndScene();
 	}
@@ -254,7 +226,8 @@ public:
 
 		Hazel::OrthographicCamera m_Camera;
 		glm::vec3 m_CameraPosition;
-		float m_CameraMoveSpeed = 0.01;
+		float m_CameraMoveSpeed = 5.0f;
+
 		float m_CameraRotation = 0.0f;
 		float m_CameraRotationSpeed = 2.0f;
 		glm::vec3 m_SquareColor = { 0.2f, 0.3f, 0.8f };
